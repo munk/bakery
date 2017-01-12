@@ -1,7 +1,7 @@
 (ns bakery.db)
 
 (def default-db
-  {:name "re-frame"
+  {:loading? false
    :treats [{:id 1
              :name ""
              :imageURL ""
