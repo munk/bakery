@@ -23,3 +23,15 @@
                  :on-success      [:initialize-db]
                  :on-failure      [:error-handler]}
     :db database/default-db}))
+
+(re-frame/reg-event-db
+ :update-cart
+ (fn [db [_ name price bulkPrice]]
+   (println "update cart" name price bulkPrice)
+   (let [cart (:cart db)
+         item (first (filter #(= name (:name %)) cart))]
+     (if item
+       (assoc-in db [:cart name] (update item :amount inc))
+       (assoc-in db [:cart name] {:price price
+                                  :bulk bulkPrice
+                                  :amount 1})))))

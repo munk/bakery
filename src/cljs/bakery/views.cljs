@@ -16,15 +16,17 @@
     (when bulkPricing
       (let [{:keys [totalPrice amount]} bulkPricing]
         (str " or " amount " for $" (.toFixed totalPrice 2))))]
-   [:button  {:style {:position :absolute
-                      :bottom 0}}
+   [:button {:style {:position :absolute
+                     :bottom 0}
+             :on-click #(re-frame/dispatch [:update-cart name price bulkPricing])}
     "Add to Cart"]])
 
 (defn treat-component [id]
   (let [treat (re-frame/subscribe [:treats id])]
     (fn []
       (let [{:keys [name price imageURL bulkPricing]} @treat]
-        [:div {:id "treat-detail"
+        [:div {:key treat
+               :id "treat-detail"
                :style {:height "100px"
                        :width "250px"
                        :position :relative}}
@@ -33,22 +35,21 @@
 
 (defn cart-entry [{:keys [name amount price bulkPricing]}]
   (fn []
-    [:div name "..." "$" (* price amount)]))
+    [:div {:key name} name "..." "$" (* price amount)]))
 
 (defn shopping-cart []
   (let [products (re-frame/subscribe [:products])]
     (fn []
-      [:div {:style {:border-style :solid
-                     :border-width "1px"
-                     :width "200px"}}
-       [:div {:style {:padding "10px"}}
-        [:h2 "Cart"]
-        [cart-entry {:name "Brownie"
-                     :amount 3
-                     :price 1.25}]
-        [:div "Total ..." "$" 9.75]
-        [:button "Checkout"]]
-       ])))
+      (let [total 0]
+        [:div {:style {:border-style :solid
+                       :border-width "1px"
+                       :width "200px"}}
+         [:div {:style {:padding "10px"}}
+          [:h2 "Cart"]
+          (map cart-entry @products)
+          [:div "Total ..." "$" total]
+          [:button "Checkout"]]
+         ]))))
 
 (defn main-panel []
   (let [treats (re-frame/subscribe [:all-treats])]

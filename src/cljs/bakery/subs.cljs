@@ -9,8 +9,8 @@
 
 (re-frame/reg-sub
  :products
- (fn [db [] id]
-   nil))
+ (fn [db _]
+   (:cart db)))
 
 (re-frame/reg-sub
  :all-treats
