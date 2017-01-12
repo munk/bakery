@@ -13,6 +13,11 @@
    nil))
 
 (re-frame/reg-sub
+ :all-treats
+ (fn [db _]
+   (:treats db)))
+
+(re-frame/reg-sub
  :treats
  (fn [db [_ id]]
    (first

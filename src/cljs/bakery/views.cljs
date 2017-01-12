@@ -1,6 +1,8 @@
 (ns bakery.views
     (:require [re-frame.core :as re-frame]))
 
+(enable-console-print!)
+
 (defn treat-thumbnail [url]
   [:img {:src url
          :style {:float :left
@@ -19,7 +21,7 @@
     "Add to Cart"]])
 
 (defn treat-component [id]
-  (let [treat (re-frame/subscribe [:treats 1])]
+  (let [treat (re-frame/subscribe [:treats id])]
     (fn []
       (let [{:keys [name price imageURL bulkPricing]} @treat]
         [:div {:id "treat-detail"
@@ -49,10 +51,14 @@
        ])))
 
 (defn main-panel []
-  (fn []
-    [:div
-     [:div {:style {:width "250px"
-                    :float :left}}
-      [treat-component 1]]
-     [:div {:style {:margin-left "300px"}}
-      [shopping-cart]]]))
+  (let [treats (re-frame/subscribe [:all-treats])]
+    (fn []
+      (println @treats)
+      [:div
+       [:div {:style {:width "250px"
+                      :float :left}}
+        (map (fn [element]
+               (println "element: " element)
+               [treat-component (:id element)]) @treats)]
+       [:div {:style {:margin-left "300px"}}
+        [shopping-cart]]])))
