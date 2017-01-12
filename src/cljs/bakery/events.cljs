@@ -27,9 +27,8 @@
 (re-frame/reg-event-db
  :update-cart
  (fn [db [_ name price bulkPrice]]
-   (println "update cart" name price bulkPrice)
    (let [cart (:cart db)
-         item (first (filter #(= name (:name %)) cart))]
+         item (get cart name)]
      (if item
        (assoc-in db [:cart name] (update item :amount inc))
        (assoc-in db [:cart name] {:price price

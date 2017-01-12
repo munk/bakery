@@ -25,28 +25,29 @@
   (let [treat (re-frame/subscribe [:treats id])]
     (fn []
       (let [{:keys [name price imageURL bulkPricing]} @treat]
-        [:div {:key treat
-               :id "treat-detail"
+        [:div {:id "treat-detail"
                :style {:height "100px"
                        :width "250px"
                        :position :relative}}
          [treat-thumbnail imageURL]
          [treat-detail name price bulkPricing]]))))
 
-(defn cart-entry [{:keys [name amount price bulkPricing]}]
-  (fn []
-    [:div {:key name} name "..." "$" (* price amount)]))
+(defn cart-entry [name product]
+  (let [{:keys [price amount]} product]
+    ^{:key name} [:div name "..." "$" (* price amount)]))
 
 (defn shopping-cart []
   (let [products (re-frame/subscribe [:products])]
     (fn []
-      (let [total 0]
+      (let [cart-keys (keys @products)
+            cart-items @products
+            total 0]
         [:div {:style {:border-style :solid
                        :border-width "1px"
                        :width "200px"}}
          [:div {:style {:padding "10px"}}
           [:h2 "Cart"]
-          (map cart-entry @products)
+          (map #(cart-entry % (get cart-items %)) cart-keys)
           [:div "Total ..." "$" total]
           [:button "Checkout"]]
          ]))))
@@ -58,6 +59,6 @@
        [:div {:style {:width "250px"
                       :float :left}}
         (map (fn [element]
-               [treat-component (:id element)]) @treats)]
+               ^{:key element} [treat-component (:id element)]) @treats)]
        [:div {:style {:margin-left "300px"}}
         [shopping-cart]]])))
