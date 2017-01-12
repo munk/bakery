@@ -29,6 +29,30 @@
          [treat-thumbnail imageURL]
          [treat-detail name price bulkPricing]]))))
 
+(defn cart-entry [{:keys [name amount price bulkPricing]}]
+  (fn []
+    [:div name "..." "$" (* price amount)]))
+
+(defn shopping-cart []
+  (let [products (re-frame/subscribe [:products])]
+    (fn []
+      [:div {:style {:border-style :solid
+                     :border-width "1px"
+                     :width "200px"}}
+       [:div {:style {:padding "10px"}}
+        [:h2 "Cart"]
+        [cart-entry {:name "Brownie"
+                     :amount 3
+                     :price 1.25}]
+        [:div "Total ..." "$" 9.75]
+        [:button "Checkout"]]
+       ])))
+
 (defn main-panel []
   (fn []
-    [treat-component 1]))
+    [:div
+     [:div {:style {:width "250px"
+                    :float :left}}
+      [treat-component 1]]
+     [:div {:style {:margin-left "300px"}}
+      [shopping-cart]]]))

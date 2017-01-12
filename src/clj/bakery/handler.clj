@@ -6,6 +6,7 @@
 
 (defroutes routes
   (GET "/" [] (resource-response "index.html" {:root "public"}))
+  (GET "/data" [] (resource-response "products-data.json"))
   (resources "/"))
 
 (def dev-handler (-> #'routes wrap-reload))

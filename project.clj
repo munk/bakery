@@ -5,7 +5,8 @@
                  [re-frame "0.9.1"]
                  [compojure "1.5.0"]
                  [yogthos/config "0.8"]
-                 [ring "1.4.0"]]
+                 [ring "1.4.0"]
+                 [day8.re-frame/http-fx "0.1.3"]]
 
   :plugins [[lein-cljsbuild "1.1.4"]]
 

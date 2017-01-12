@@ -8,6 +8,11 @@
    (:name db)))
 
 (re-frame/reg-sub
+ :products
+ (fn [db [] id]
+   nil))
+
+(re-frame/reg-sub
  :treats
  (fn [db [_ id]]
    (first
