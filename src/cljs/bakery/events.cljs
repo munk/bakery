@@ -7,7 +7,6 @@
 (re-frame/reg-event-db
  :error-handler
  (fn [db _]
-   (js/console.log "wtf")
    db))
 
 (re-frame/reg-event-db

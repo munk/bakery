@@ -53,12 +53,10 @@
 (defn main-panel []
   (let [treats (re-frame/subscribe [:all-treats])]
     (fn []
-      (println @treats)
       [:div
        [:div {:style {:width "250px"
                       :float :left}}
         (map (fn [element]
-               (println "element: " element)
                [treat-component (:id element)]) @treats)]
        [:div {:style {:margin-left "300px"}}
         [shopping-cart]]])))
