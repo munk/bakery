@@ -6,3 +6,10 @@
  :name
  (fn [db]
    (:name db)))
+
+(re-frame/reg-sub
+ :treats
+ (fn [db [_ id]]
+   (first
+    (filter #(= id (:id %))
+            (:treats db)))))
