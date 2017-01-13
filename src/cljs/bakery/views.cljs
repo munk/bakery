@@ -3,7 +3,6 @@
 
 (enable-console-print!)
 
-
 (defn subtotal [{:keys [price bulk amount]}]
   (if bulk
     (let [item-ct amount
@@ -51,23 +50,36 @@
 
 (defn cart-entry [name product]
   (let [{:keys [price amount]} product]
-    ^{:key name} [:div name "..." "$" (subtotal product)]))
+    (let [subt (subtotal product)
+          subt-len (count (str subt))
+          name' (if (= amount 1)
+                  name
+                  (str name " × " amount))
+          name-len (count name')
+          padding (.repeat "." (- 50 (+ name-len subt-len)))]
+      ^{:key name} [:div {:style {:border-style :solid
+                                  :border-width "1px"}} name' padding "$" (subtotal product)])))
 
 (defn shopping-cart []
   (let [products (re-frame/subscribe [:products])]
     (fn []
       (let [cart-keys (keys @products)
             cart-items @products
-            total 0]
+            cart-total (cart-total cart-items)
+            padding (.repeat "." (- 45 (count (str cart-total))))]
         [:div {:style {:border-style :solid
                        :border-width "1px"
-                       :width "200px"}}
+                       :width "430px"}}
          [:div {:style {:padding "10px"}}
           [:h2 "Cart"]
-          (map #(cart-entry % (get cart-items %)) cart-keys)
-          [:div "Total ..." "$" (cart-total @products)]
-          [:button "Checkout"]]
-         ]))))
+          [:div {:style {:border-style :solid
+                         :border-width "1px"
+                         :font-family "monospace"}}
+           (map #(cart-entry % (get cart-items %)) cart-keys)]
+          [:div {:style {:font-family "monospace"}} "Total" padding "$" cart-total]
+          [:button "Checkout"]
+          [:button {:on-click #(re-frame/dispatch [:clear-cart])
+                    :style {:float :right}} "Clear"]]]))))
 
 (defn main-panel []
   (let [treats (re-frame/subscribe [:all-treats])]
