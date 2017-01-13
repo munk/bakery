@@ -27,6 +27,7 @@
 (re-frame/reg-event-db
  :update-cart
  (fn [db [_ name price bulkPrice]]
+   (println db)
    (let [cart (:cart db)
          item (get cart name)]
      (if item

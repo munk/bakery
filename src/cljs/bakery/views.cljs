@@ -3,20 +3,22 @@
 
 (enable-console-print!)
 
-(defn subtotal [item]
-  (let [{:keys [price bulk amount]} item]
-    (if bulk
-      (let [item-ct amount
-            {:keys [amount totalPrice]} bulk
-            bulk-ct (quot item-ct amount)
-            bulk-rem (rem item-ct amount)]
-        (if (= 0 bulk-ct)
-          (* price amount)
-          (+ (* bulk-ct totalPrice) (* price bulk-rem))))
-      (* price amount))))
 
-(defn total [cart]
-  0)
+(defn subtotal [{:keys [price bulk amount]}]
+  (if bulk
+    (let [item-ct amount
+          {:keys [amount totalPrice]} bulk
+          bulk-ct (quot item-ct amount)
+          bulk-rem (rem item-ct amount)]
+      (if (= 0 bulk-ct)
+        (* price item-ct)
+        (+ (* bulk-ct totalPrice) (* price bulk-rem))))
+    (* price amount)))
+
+(defn cart-total [cart]
+  (let [ks (keys cart)
+        subs (map #(subtotal (get cart %)) ks)]
+    (reduce + subs)))
 
 (defn treat-thumbnail [url]
   [:img {:src url
@@ -63,7 +65,7 @@
          [:div {:style {:padding "10px"}}
           [:h2 "Cart"]
           (map #(cart-entry % (get cart-items %)) cart-keys)
-          [:div "Total ..." "$" total]
+          [:div "Total ..." "$" (cart-total @products)]
           [:button "Checkout"]]
          ]))))
 
