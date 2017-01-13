@@ -7,6 +7,7 @@
 
 (defn clear-cart []
   (re-frame/dispatch [:clear-cart]))
+
 (defn treat-thumbnail [url]
   [:img.thumb {:src url}])
 
@@ -36,7 +37,7 @@
                   name
                   (str name " × " amount))
           name-len (count name')
-          padding (.repeat "." (- 50 (+ name-len subt-len)))]
+          padding (pad 50  (+ name-len subt-len))]
       ^{:key name} [:div.cart-entry name' padding "$" (subtotal product)])))
 
 (defn shopping-cart []
@@ -45,7 +46,7 @@
       (let [cart-keys (keys @products)
             cart-items @products
             cart-total (cart-total cart-items)
-            padding (.repeat "." (- 45 (count (str cart-total))))]
+            padding (pad 45 (count (str cart-total)))]
         [:div.cart
          [:div {:style {:padding "10px"}}
           [:h2 "Cart"]

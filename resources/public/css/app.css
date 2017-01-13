@@ -1,0 +1,42 @@
+.thumb {
+    float: left;
+    height: 100px;
+    width: 100px;
+}
+               
+.product-btn {
+    position: absolute;
+    bottom: 0;
+}
+
+.treat-detail {
+    height: 100px;
+    width: 250px;
+    position: relative;
+}
+
+.cart-entry {
+    border-style: solid;
+    border-width: 1px;
+}
+
+.cart {
+    border-style: solid;
+    border-width: 1px;
+    width: 430px;
+}
+
+.cart-entry-container {
+    border-style: solid;
+    border-width: 1px;
+    font-family: monospace;
+}
+
+.product-container {
+    width: 250px;
+    float: left;
+}
+
+.cart-container {
+    margin-left: 300px;
+}
