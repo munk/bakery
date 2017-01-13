@@ -6,6 +6,7 @@
               [bakery.views :as views]
               [bakery.config :as config]))
 
+(enable-console-print!)
 
 (defn dev-setup []
   (when config/debug?

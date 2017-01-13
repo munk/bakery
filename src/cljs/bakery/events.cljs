@@ -4,38 +4,52 @@
             [ajax.core :as ajax]
             [bakery.db :as database]))
 
+
+(defn error-handler [db _] db)
+
+
+(defn init-db [db [_ response]]
+  (assoc db :treats (:treats response)))
+
+
+(defn init-app [{db :db}]
+  {:http-xhrio {:method          :get
+                :uri             "/data"
+                :response-format (ajax/json-response-format {:keywords? true})
+                :on-success      [:initialize-db]
+                :on-failure      [:error-handler]}
+   :db database/default-db})
+
+
+(defn update-cart [db [_ name price bulkPrice]]
+  (let [cart (:cart db)
+        item (get cart name)]
+    (if item
+      (assoc-in db [:cart name] (update item :amount inc))
+      (assoc-in db [:cart name] {:price price
+                                 :bulk bulkPrice
+                                 :amount 1}))))
+
+(defn clear-cart [db _]
+  (assoc db :cart {}))
+
+
 (re-frame/reg-event-db
  :error-handler
- (fn [db _]
-   db))
+ error-handler)
 
 (re-frame/reg-event-db
  :initialize-db
- (fn  [db [_ response]]
-   (assoc db :treats (:treats response))))
+ init-db)
 
 (re-frame/reg-event-fx
  :initialize-app
- (fn [{db :db} _]
-   {:http-xhrio {:method          :get
-                 :uri             "/data"
-                 :response-format (ajax/json-response-format {:keywords? true})
-                 :on-success      [:initialize-db]
-                 :on-failure      [:error-handler]}
-    :db database/default-db}))
+ init-app)
 
 (re-frame/reg-event-db
  :update-cart
- (fn [db [_ name price bulkPrice]]
-   (let [cart (:cart db)
-         item (get cart name)]
-     (if item
-       (assoc-in db [:cart name] (update item :amount inc))
-       (assoc-in db [:cart name] {:price price
-                                  :bulk bulkPrice
-                                  :amount 1})))))
+ update-cart)
 
 (re-frame/reg-event-db
  :clear-cart
- (fn [db _]
-   (assoc db :cart {})))
+ clear-cart)
