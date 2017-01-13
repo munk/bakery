@@ -2,12 +2,13 @@
   (:require [re-frame.core :as re-frame]
             [bakery.util :refer [subtotal cart-total]]))
 
+(defn pad [line-len other-chars-len]
+  (.repeat "." (- line-len other-chars-len)))
 
+(defn clear-cart []
+  (re-frame/dispatch [:clear-cart]))
 (defn treat-thumbnail [url]
-  [:img {:src url
-         :style {:float :left
-                 :height "100px"
-                 :width "100px"}}])
+  [:img.thumb {:src url}])
 
 (defn treat-detail [name price bulkPricing]
   [:div {:style {:padding-left 110}}
@@ -16,19 +17,14 @@
     (when bulkPricing
       (let [{:keys [totalPrice amount]} bulkPricing]
         (str " or " amount " for $" (.toFixed totalPrice 2))))]
-   [:button {:style {:position :absolute
-                     :bottom 0}
-             :on-click #(re-frame/dispatch [:update-cart name price bulkPricing])}
+   [:button.product-btn {:on-click #(re-frame/dispatch [:update-cart name price bulkPricing])}
     "Add to Cart"]])
 
 (defn treat-component [id]
   (let [treat (re-frame/subscribe [:treats id])]
     (fn []
       (let [{:keys [name price imageURL bulkPricing]} @treat]
-        [:div {:id "treat-detail"
-               :style {:height "100px"
-                       :width "250px"
-                       :position :relative}}
+        [:div.treat-detail {:id (str "treat-detail" id)}
          [treat-thumbnail imageURL]
          [treat-detail name price bulkPricing]]))))
 
@@ -41,8 +37,7 @@
                   (str name " × " amount))
           name-len (count name')
           padding (.repeat "." (- 50 (+ name-len subt-len)))]
-      ^{:key name} [:div {:style {:border-style :solid
-                                  :border-width "1px"}} name' padding "$" (subtotal product)])))
+      ^{:key name} [:div.cart-entry name' padding "$" (subtotal product)])))
 
 (defn shopping-cart []
   (let [products (re-frame/subscribe [:products])]
@@ -51,27 +46,25 @@
             cart-items @products
             cart-total (cart-total cart-items)
             padding (.repeat "." (- 45 (count (str cart-total))))]
-        [:div {:style {:border-style :solid
-                       :border-width "1px"
-                       :width "430px"}}
+        [:div.cart
          [:div {:style {:padding "10px"}}
           [:h2 "Cart"]
-          [:div {:style {:border-style :solid
-                         :border-width "1px"
-                         :font-family "monospace"}}
+          [:div.cart-entry-container
            (map #(cart-entry % (get cart-items %)) cart-keys)]
           [:div {:style {:font-family "monospace"}} "Total" padding "$" cart-total]
-          [:button "Checkout"]
-          [:button {:on-click #(re-frame/dispatch [:clear-cart])
+          [:button {:on-click #(do
+                                 (js/alert (str "You spent $" cart-total))
+                                 (clear-cart))}
+           "Checkout"]
+          [:button {:on-click clear-cart
                     :style {:float :right}} "Clear"]]]))))
 
 (defn main-panel []
   (let [treats (re-frame/subscribe [:all-treats])]
     (fn []
       [:div
-       [:div {:style {:width "250px"
-                      :float :left}}
+       [:div.product-container
         (map (fn [element]
                ^{:key element} [treat-component (:id element)]) @treats)]
-       [:div {:style {:margin-left "300px"}}
+       [:div.cart-container
         [shopping-cart]]])))
